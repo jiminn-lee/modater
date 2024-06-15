@@ -1,22 +1,35 @@
 <script lang="ts">
   import Logo from '$lib/assets/logo.png';
+  import Mod from '$lib/components/Mod.svelte';
   import axios from "axios";
   import {onMount} from "svelte";
   import {open} from "@tauri-apps/api/dialog";
   import {homeDir} from "@tauri-apps/api/path"
-  import {readDir, type FileEntry} from "@tauri-apps/api/fs";
+  import {readDir, type FileEntry, exists, createDir, removeFile} from "@tauri-apps/api/fs";
 
   import { invoke } from "@tauri-apps/api/tauri";
 
   invoke('extract', {path: 'test'})
 
   let versions: string[]  = [];
-  let contents: FileEntry[] = [];
+  let contents: FileEntry[] = []
 
   onMount(async () => {
+    let prevContents: FileEntry[] = [];
     try {
       let response = await axios.get("https://launchermeta.mojang.com/mc/game/version_manifest.json");
       versions = response.data.versions.filter((version: {type: string}) => version.type==="release").map((version: {id: string}) => version.id)
+    
+      // const path = await homeDir() + "AppData\\Roaming\\.minecraft\\modater";
+      // if (!(await exists(path))) {
+      //   await createDir(path);
+      // } else {
+      //   prevContents = await readDir(path);
+      //   for (const file of prevContents) {
+      //     await removeFile(file.path);
+      //   }
+      // }
+    
     } catch(e) {
       console.log(e);
     }
@@ -42,8 +55,8 @@
   <img src="{Logo}" alt="" class="max-w-[200px] max-h-[50px]">
   <div class="overflow-auto w-[600px] h-[400px] rounded-3xl border-solid border-zinc-800 border-2 m-6">
     <ul>
-      {#each contents as content}
-         <li class="bg-white p-3">{content.name}</li>
+      {#each contents as content, i}
+         <Mod fileName={content.name} modName="Test" bgColor={`${i%2===0? "bg-zinc-700" : "bg-zinc-800"}`}/>
       {/each}
     </ul>
   </div>

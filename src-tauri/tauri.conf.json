@@ -24,6 +24,7 @@
         "all": true
       },
       "fs": {
+        "scope": ["$HOME/AppData/Roaming/.minecraft/*", "$HOME/AppData/Roaming/.minecraft/modater/*"],
         "all": true,
         "readFile": true,
         "writeFile": true,
